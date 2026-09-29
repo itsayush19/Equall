@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,7 +28,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aktech.equall.common.components.GreetingHeader
 import com.aktech.equall.common.components.TrustIqCard
 import com.aktech.equall.domain.model.ApplicationSummary
@@ -37,24 +35,9 @@ import com.aktech.equall.domain.model.ReviewInfo
 import com.aktech.equall.domain.model.ReviewStepInfo
 import com.aktech.equall.domain.model.ReviewStepState
 import com.aktech.equall.utils.EquallColors
-import com.aktech.equall.utils.ErrorView
-import com.aktech.equall.utils.LoadingView
-import com.aktech.equall.utils.UiState
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ReviewScreen(viewModel: ReviewViewModel = koinViewModel()) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-
-    when (val s = state) {
-        UiState.Loading -> LoadingView()
-        is UiState.Error -> ErrorView(message = s.message, onRetry = viewModel::load)
-        is UiState.Success -> ReviewContent(s.data)
-    }
-}
-
-@Composable
-private fun ReviewContent(data: ReviewInfo) {
+fun ReviewContent(data: ReviewInfo) {
     Column(
         modifier = Modifier
             .fillMaxSize()

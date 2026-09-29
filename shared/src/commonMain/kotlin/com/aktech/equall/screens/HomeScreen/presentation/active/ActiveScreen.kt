@@ -17,7 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,7 +24,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aktech.equall.common.components.GreetingHeader
 import com.aktech.equall.common.components.TrustIqCard
 import com.aktech.equall.domain.model.ActiveLoan
@@ -34,24 +32,9 @@ import com.aktech.equall.domain.model.LoanSummary
 import com.aktech.equall.domain.model.NextEmi
 import com.aktech.equall.utils.EquallColors
 import com.aktech.equall.utils.EquallIcons
-import com.aktech.equall.utils.ErrorView
-import com.aktech.equall.utils.LoadingView
-import com.aktech.equall.utils.UiState
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ActiveScreen(viewModel: ActiveViewModel = koinViewModel()) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-
-    when (val s = state) {
-        UiState.Loading -> LoadingView()
-        is UiState.Error -> ErrorView(message = s.message, onRetry = viewModel::load)
-        is UiState.Success -> ActiveContent(s.data)
-    }
-}
-
-@Composable
-private fun ActiveContent(data: ActiveLoan) {
+fun ActiveContent(data: ActiveLoan) {
     Column(
         modifier = Modifier
             .fillMaxSize()

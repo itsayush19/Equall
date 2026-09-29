@@ -5,28 +5,34 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.aktech.equall.screens.HomeScreen.presentation.active.ActiveScreen
-import com.aktech.equall.screens.HomeScreen.presentation.discovery.DiscoveryScreen
-import com.aktech.equall.screens.HomeScreen.presentation.review.ReviewScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aktech.equall.screens.HomeScreen.presentation.active.ActiveContent
+import com.aktech.equall.screens.HomeScreen.presentation.discovery.DiscoveryContent
+import com.aktech.equall.screens.HomeScreen.presentation.review.ReviewContent
+import com.aktech.equall.utils.ErrorView
+import com.aktech.equall.utils.LoadingView
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
-    var selectedTab by remember { mutableStateOf(HomeTab.Discovery) }
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = koinViewModel(),
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     Column(modifier = modifier.fillMaxSize()) {
         HomeTabBar(
-            selected = selectedTab,
-            onSelect = { selectedTab = it },
+            selected = state.selectedTab,
+            onSelect = viewModel::onTabSelected,
         )
         Box(modifier = Modifier.fillMaxSize()) {
-            when (selectedTab) {
-                HomeTab.Discovery -> DiscoveryScreen()
-                HomeTab.Review -> ReviewScreen()
-                HomeTab.Active -> ActiveScreen()
+            when (val content = state.content) {
+                HomeContentState.Loading -> LoadingView()
+                is HomeContentState.Error -> ErrorView(message = content.message, onRetry = viewModel::load)
+                is HomeContentState.Discovery -> DiscoveryContent(content.data)
+                is HomeContentState.Review -> ReviewContent(content.data)
+                is HomeContentState.Active -> ActiveContent(content.data)
             }
         }
     }
